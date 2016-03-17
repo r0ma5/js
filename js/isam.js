@@ -30,22 +30,24 @@ var esd = {
         } else if (event.type == "INITIATING"){
             console.log("Found INITIATING event");
             console.log(event.childIds);
-            for (var i = 0; i < event.childIds.length; i++){
-                myself.call(this, this.fid(event.childIds[i]), event.frequency, 1);
-            }
-        } else if (event.type == "END") { //yes branch
+            event.childIds.forEach(function(i){this.calculate(this.fid(i), event.frequency,1)},this);
+        } else if (event.type == "END") {
             event._frequency = event.parentRelationType == "YES" ? freq*prb : freq*(1.0-prb);
             console.log("result:"+event._frequency);
             return;
         } else if (event.type == "PIVOTAL"){
             event._frequency = event.parentRelationType == "YES" ? freq*prb : freq*(1.0-prb);
             console.log("result:"+event._frequency);
-            for (var i = 0; i < event.childIds.length; i++){
-                myself.call(this, this.fid(event.childIds[i]), event._frequency, event.probability);
-            }
+            event.childIds.forEach(function(i){this.calculate(this.fid(i), event._frequency,event.probability)},this);
         }
     }
 };
+
+function showValue(newValue)
+{
+	document.getElementById("range").innerHTML=newValue;
+	document.getElementById("range1").value=newValue;
+}
 
 
 $(document).ready(function() {

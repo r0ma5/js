@@ -1,17 +1,21 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Hello jQuery</title>
+        <title>ISAM ESD</title>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
         <script src="js/isam.js"></script>
     </head>
 
     <body>
+        <a href=https://ape-3.saabsensis.com/userweb/authentication/view/portal>Login</a>
+
         <div>
             <p class="greeting-id">The ID: </p>
             <p class="greeting-content">The content: </p>
+            <input id=range1 type="range" min="0" max="50" value="0" step="1"/>
+            <input type="range" min="0" max="50" value="0" step="1" onchange="showValue(this.value)" />
+            <span id="range">0</span>
         </div>
-        <a href=https://ape-3.saabsensis.com/userweb/authentication/view/portal>Login</a>
     </body>
 </html>
 
