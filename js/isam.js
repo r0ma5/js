@@ -3,6 +3,14 @@ var gcounts = {
     recursion_depth: 64
 };
 
+Number.prototype.base=function(fractionDigits){
+    return this.toExponential(fractionDigits).slice(0, this.toExponential(fractionDigits).indexOf("e"));
+};
+
+Number.prototype.exponent=function(fractionDigits){
+    return this.toExponential(fractionDigits).slice(this.toExponential(fractionDigits).indexOf("e")+1);
+};
+
 var esd = {
     events: [],
     fid: function (id){
@@ -43,12 +51,23 @@ var esd = {
     }
 };
 
-function showValue(newValue)
-{
-	document.getElementById("range").innerHTML=newValue;
-	document.getElementById("range1").value=newValue;
+function displayValue(id, newval){
+    console.log("ID:"+id+"VAL:"+newval);
+// span   $("#sliders").append("ID:"+id+"VAL:"+newval);
 }
 
+function showValue(newValue)
+{
+//	document.getElementById("range").innerHTML=newValue;
+//	document.getElementById("range1").value=newValue;
+	$("#range").text(newValue);
+	$("#range2").val(newValue);
+}
+
+function showSlider(){
+    var pbase = this.probability.base;
+    $("#sliders").add("<input id="+this.id+" type=range min=0 max=1000 step=1 value="+pbase);
+}
 
 $(document).ready(function() {
     $.ajax({
@@ -59,6 +78,10 @@ $(document).ready(function() {
 //        console.log(esd.fid(440));
        esd.calculate();
        console.log(esd.outcomes());
+       console.log(esd.barriers());
+       esd.barriers().forEach(function(b){
+           $("#sliders").append("<p><input type=range id="+b.id+" min=0 max=1000 step=1 value="+Math.round(b.probability.base())+" onchange=displayValue(this.id,this.value) />");
+       });
        $('.greeting-id').append(data.id);
        $('.greeting-content').append(data.description);
     });
