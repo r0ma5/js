@@ -33,6 +33,7 @@ var esd = {
         console.log(event);
         if (gcounts.recursion_level++ > gcounts.recursion_depth) return; //safety check to avoid stack issues
         if (event == null || event == undefined){ //find starting point(s)
+            gcounts.recursion_level=0;
             console.log("looking for INITIATING event");
             this.initiating().forEach(function(e){this.calculate(e,1,1)}, this);
         } else if (event.type == "INITIATING"){
@@ -52,8 +53,12 @@ var esd = {
 };
 
 function displayValue(id, newval){
-    console.log("ID:"+id+"VAL:"+newval);
-// span   $("#sliders").append("ID:"+id+"VAL:"+newval);
+    console.log("ID:"+id+" VAL:"+newval);
+    console.log(esd.fid(id).probability);
+//    console.log(esd.fid(id).probability.exponent());
+    esd.fid(id).probability=newval;
+    $("#current_"+id).text(esd.fid(id).probability);
+    esd.calculate();
 }
 
 function showValue(newValue)
@@ -64,9 +69,14 @@ function showValue(newValue)
 	$("#range2").val(newValue);
 }
 
-function showSlider(){
-    var pbase = this.probability.base;
-    $("#sliders").add("<input id="+this.id+" type=range min=0 max=1000 step=1 value="+pbase);
+function showSlider(b){
+    $("#sliders").append("<p>");
+    $("#sliders").append("<span>"+b.uniqueId+"</span>");
+    $("#sliders").append(b.uniqueID);    
+//    $("#sliders").append("<input type=range id="+b.id+" min=0.000001 max=1 step=.001 value="+Math.round(b.probability.base())+" onchange=displayValue(this.id,this.value) />");
+    $("#sliders").append("<input type=range id="+b.id+" min=0.000001 max=1 step=.000001 value="+b.probability+" onchange=displayValue(this.id,this.value) />");
+    $("#sliders").append("<span id=current_"+b.id+">"+b.probability+"</span>");
+    $("#sliders").append("</p>");
 }
 
 $(document).ready(function() {
@@ -79,10 +89,8 @@ $(document).ready(function() {
        esd.calculate();
        console.log(esd.outcomes());
        console.log(esd.barriers());
-       esd.barriers().forEach(function(b){
-           $("#sliders").append("<p><input type=range id="+b.id+" min=0 max=1000 step=1 value="+Math.round(b.probability.base())+" onchange=displayValue(this.id,this.value) />");
-       });
-       $('.greeting-id').append(data.id);
+       esd.barriers().forEach(showSlider);
+       $('.greeting-id').append(data.uniqueId);
        $('.greeting-content').append(data.description);
     });
 });
