@@ -117,13 +117,13 @@ function drawChart() {
     data.setCell(0, 0, 'Initiating');
     esd.initiating().forEach(function(e){
         data.setCell(0, ++i, e.frequency);
-        data.setCell(0, ++i, e.name+" ("+Number(e.frequency).toExponential()+")");
+        data.setCell(0, ++i, e.uniqueId+":"+e.name+" ("+Number(e.frequency).toExponential()+")");
         
     });
     data.setCell(1, 0, 'Outcomes');
     esd.outcomes().forEach(function(e){
         data.setCell(1, ++i, e.frequency);
-        data.setCell(1, ++i, e.name+" ("+Number(e.frequency).toExponential()+")");
+        data.setCell(1, ++i, e.uniqueId+":"+e.name+" ("+Number(e.frequency).toExponential()+")");
     });
 //    esd.outcomes().forEach(function(e){data.addColumn('number', e.frequency)});
 //    data.addColumn('number', 'One');
