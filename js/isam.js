@@ -159,7 +159,7 @@ $(document).ready(function() {
         esd.events = data.events;
         esdId = data.uniqueId;
 //        console.log(esd.fid(440));
-       esd.calculate();
+//       esd.calculate();
        console.log(esd.outcomes());
        console.log(esd.barriers());
        esd.initiating().forEach(showSlider);
