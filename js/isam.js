@@ -135,8 +135,8 @@ function drawChart() {
 //    ]);
     var options = {
         title: esdId,
-        width: 600,
-        height: 400,
+        width: 800,
+        height: 600,
         bar: {groupWidth: "95%"},
         legend: { position: 'right', maxLines: 10 },
 //        legend: { position: "none" },
