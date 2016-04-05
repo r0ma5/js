@@ -137,7 +137,7 @@ function drawChart() {
         title: esdId,
         width: 650,
         height: 400,
-        bar: {groupWidth: "95%"},
+        bar: {groupWidth: "40%"},
         legend: { position: 'right', maxLines: 10 },
 //        legend: { position: "none" },
         isStacked: true
