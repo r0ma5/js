@@ -15,7 +15,10 @@
             <p class="esd-desc">Desc: </p>
         </div>
         <div id="sliders"></div>
+        <br>
+        <div id="scale_switch"><label for=chkbx_scale_switch>Log scale for graph</label><input type=checkbox id=chkbx_scale_switch onclick="if(this.checked){drawChart({scaleType: 'log'});} else {drawChart();};"></div>
         <div id="chart_div"></div>
+        <div id="chart_div_log"></div>
     </body>
 </html>
 

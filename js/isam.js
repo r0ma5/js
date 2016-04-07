@@ -3,19 +3,24 @@ var gcounts = {
     recursion_depth: 64
 };
 
-Number.prototype.base=function(fractionDigits){
-    return this.toExponential(fractionDigits).slice(0, this.toExponential(fractionDigits).indexOf("e"));
-};
-
-Number.prototype.exponent=function(fractionDigits){
-    return this.toExponential(fractionDigits).slice(this.toExponential(fractionDigits).indexOf("e")+1);
-};
-
 var esdId;
 
 var esd = {
     events: [],
     fid: function (id){
+        return this.events.find(function(event){return event.id == id;});
+    },
+    porf: function (id){
+        switch(this.fid(id).type){
+            case "PIVOTAL":
+                return this.fid(id).probability;
+                break;
+            case "INITIATING":
+                return this.fid(id).frequency;
+                break;    
+            default:
+                return 0;
+        }
         return this.events.find(function(event){return event.id == id;});
     },
     initiating: function () {
@@ -51,20 +56,28 @@ var esd = {
             console.log("result:"+event.frequency);
             event.childIds.forEach(function(i){this.calculate(this.fid(i), event.frequency,event.probability)},this);
         }
-    }
+    },
 };
 
-function displayValue(id, newval){
-    console.log("ID:"+id+" VAL:"+newval);
+function displayValue(input){
+    var id = $("#"+input.id).data("isam-id");
+    var newval = input.value;
+    console.log("ID:"+id+" type:"+input.type+" VAL:"+newval);
+    switch(input.type){
+        case "text":
+            $("#range_"+id).val(newval);
+            break;
+        case "range":
+            $("#text_"+id).val(newval);
+            break;
+    }
     esd.barriers().forEach(function(e){console.log(e.name+' '+e.probability)});
     switch(esd.fid(id).type){
         case "PIVOTAL":
             esd.fid(id).probability=newval;
-            $("#current_"+id).text(esd.fid(id).probability);
             break;
         case "INITIATING":
             esd.fid(id).frequency=newval;
-            $("#current_"+id).text(esd.fid(id).frequency);
             break;
     }    
     esd.barriers().forEach(function(e){console.log(e.name+' '+e.probability)});
@@ -72,33 +85,22 @@ function displayValue(id, newval){
     drawChart();
 }
 
-function showValue(newValue)
-{
-//	document.getElementById("range").innerHTML=newValue;
-//	document.getElementById("range1").value=newValue;
-	$("#range").text(newValue);
-	$("#range2").val(newValue);
+function showSliderTable(b){
+    var slider_min = (esd.porf(b.id)/2).toFixed(8);
+    var slider_max = (esd.porf(b.id)*1.5).toFixed(8);
+    var slider_step = 0.000000001;
+    var content = "<table border=0 width=600>"+
+    "<tr><td width=50><span>"+b.uniqueId+":</span></td>"+
+    "<td width=350><span>"+b.name+"</span></td>"+
+    "<td width=200><input id=text_"+b.id+" value="+esd.porf(b.id)+" data-isam-id="+b.id+" onkeyup=displayValue(this)></td>"+
+    "</tr><tr><td colspan=3>"+slider_min+
+    "<input type=range style=width:400px id=range_"+b.id+" data-isam-id="+b.id+" min="+slider_min+" max="+slider_max+" step="+slider_step+" value="+esd.porf(b.id)+" onchange=displayValue(this) />"+
+    slider_max+"</td></tr></table>";
+    $("#sliders").append(content);
 }
 
-function showSlider(b){
-    $("#sliders").append("<p><span>"+b.name+"</span></p>");
-    $("#sliders").append("<p>");
-    $("#sliders").append("<span>"+b.uniqueId+"</span>");
-    $("#sliders").append(b.uniqueID);    
-    switch(b.type){
-        case "PIVOTAL":
-            $("#sliders").append("<input type=range id="+b.id+" min=0.00000001 max=1 step=.00000001 value="+b.probability+" onchange=displayValue(this.id,this.value) />");
-            $("#sliders").append("<span id=current_"+b.id+">"+b.probability+"</span>");
-            break;
-        case "INITIATING":
-            $("#sliders").append("<input type=range id="+b.id+" min=0.00000001 max=1 step=.00000001 value="+b.frequency+" onchange=displayValue(this.id,this.value) />");
-            $("#sliders").append("<span id=current_"+b.id+">"+b.frequency+"</span>");
-            break;
-    }
-    $("#sliders").append("</p>");
-}
 
-function drawChart() {
+function drawChart(axle_type) {
     var i=0;
 // Define the chart to be drawn.
     console.log("drawChart");
@@ -135,13 +137,19 @@ function drawChart() {
 //    ]);
     var options = {
         title: esdId,
-        width: 650,
-        height: 400,
+        width: 800,
+        height: 600,
         bar: {groupWidth: "40%"},
         legend: { position: 'right', maxLines: 10 },
 //        legend: { position: "none" },
-        isStacked: true
+        isStacked: true,
+        vAxis: {
+//          scaleType: 'log',
+//          ticks: []
+//          ticks: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]
+        }
     };
+    options.vAxis = axle_type;
 
       // Instantiate and draw the chart.
       var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
@@ -156,14 +164,14 @@ $(document).ready(function() {
     }).then(function(data) {
       google.charts.load('current', {packages: ['corechart']});
       google.charts.setOnLoadCallback(drawChart);
-        esd.events = data.events;
-        esdId = data.uniqueId;
+      esd.events = data.events;
+      esdId = data.uniqueId;
 //        console.log(esd.fid(440));
 //       esd.calculate();
        console.log(esd.outcomes());
        console.log(esd.barriers());
-       esd.initiating().forEach(showSlider);
-       esd.barriers().forEach(showSlider);
+       esd.initiating().forEach(showSliderTable);
+       esd.barriers().forEach(showSliderTable);
        $('.esd-id').append(data.uniqueId);
        $('.esd-desc').append(data.description);
     });
