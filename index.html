@@ -3,7 +3,6 @@
     <head>
         <title>ISAM ESD</title>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-        <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
         <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
         <script src="js/isam.js"></script>
     </head>
@@ -19,10 +18,12 @@
         <div id="sliders"></div>
         <br>
         <div id="scale_switch"><label for=chkbx_scale_switch>Log scale for graph</label><input type=checkbox id=chkbx_scale_switch onclick="if(this.checked){drawChart({scaleType: 'log'});} else {drawChart();};"></div>
-        <div class="row">
-            <div class="col-sm-6"><div id="chart_div"/></div>
-            <div class="col-sm-6"><div id="chart_div_log"/></div>
-        </div>
+        <table>
+            <tr>
+            <td><div id="chart_div"/></td>
+            <td><div id="chart_div_log"/></td>
+            </tr>
+        </table>
     </div>
     </body>
 </html>
