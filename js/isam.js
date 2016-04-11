@@ -83,6 +83,7 @@ function displayValue(input){
     esd.barriers().forEach(function(e){console.log(e.name+' '+e.probability)});
     esd.calculate();
     drawChart();
+    drawChartLog();
 }
 
 function showSliderTable(b){
