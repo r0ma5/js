@@ -157,6 +157,61 @@ function drawChart(axle_type) {
     }
 
 
+function drawChartLog() {
+    var i=0;
+// Define the chart to be drawn.
+    console.log("drawChart");
+    esd.outcomes().forEach(function(e){console.log(e.name+' '+e.frequency)});
+    var data = new google.visualization.DataTable();
+    data.addColumn('string', '');
+    esd.initiating().forEach(function(e){
+        data.addColumn('number', e.name);
+        data.addColumn({type: 'string', role: 'tooltip'});
+    });
+    esd.barriers().forEach(function(e){
+        data.addColumn('number', e.name)
+        data.addColumn({type: 'string', role: 'tooltip'});
+    });
+    data.addRows(1);
+    data.setCell(0, 0, 'Risk');
+    esd.initiating().forEach(function(e){
+        data.setCell(0, ++i, e.frequency);
+        data.setCell(0, ++i, e.uniqueId+":"+e.name+" ("+Number(e.frequency).toExponential()+")");
+        
+    });
+    esd.barriers().forEach(function(e){
+        data.setCell(0, ++i, e.probability);
+        data.setCell(0, ++i, e.uniqueId+":"+e.name+" ("+Number(e.probability).toExponential()+")");
+    });
+//    esd.outcomes().forEach(function(e){data.addColumn('number', e.frequency)});
+//    data.addColumn('number', 'One');
+//   data.addColumn('number', 'Two');
+//    data.addColumn('number', 'Three');
+//    data.addRows([
+//        ['Initiating', 0.0000001, null, null, null],
+//        ['Outcomes', null, 0.00000078, 0.00000021, 0.00000001],
+//    ]);
+    var options = {
+        title: esdId,
+        width: 800,
+        height: 600,
+        bar: {groupWidth: "40%"},
+        legend: { position: 'right', maxLines: 10 },
+//        legend: { position: "none" },
+        isStacked: true,
+        vAxis: {
+          scaleType: 'log',
+//          ticks: []
+//          ticks: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]
+        }
+    };
+
+      // Instantiate and draw the chart.
+      var chart = new google.visualization.ColumnChart(document.getElementById('chart_div_log'));
+      chart.draw(data, options);
+    }
+
+
 $(document).ready(function() {
     $.ajax({
         url: "https://ape-3.saabsensis.com/isam-webservice/safety/v1/eventSequences/45",
@@ -164,6 +219,7 @@ $(document).ready(function() {
     }).then(function(data) {
       google.charts.load('current', {packages: ['corechart']});
       google.charts.setOnLoadCallback(drawChart);
+            google.charts.setOnLoadCallback(drawChartLog);
       esd.events = data.events;
       esdId = data.uniqueId;
 //        console.log(esd.fid(440));
@@ -172,7 +228,7 @@ $(document).ready(function() {
        console.log(esd.barriers());
        esd.initiating().forEach(showSliderTable);
        esd.barriers().forEach(showSliderTable);
-       $('.esd-id').append(data.uniqueId);
-       $('.esd-desc').append(data.description);
+       $('.esd-id').text(data.uniqueId);
+       $('.esd-desc').text(data.description);
     });
 });

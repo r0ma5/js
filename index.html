@@ -3,22 +3,27 @@
     <head>
         <title>ISAM ESD</title>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+        <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
         <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
         <script src="js/isam.js"></script>
     </head>
 
     <body>
+    <div class="container">
         <a href=https://ape-3.saabsensis.com/userweb/authentication/view/portal onclick="window.open(this);return false;">ISAM Login</a>
         in different window and reload this one for "What-If" functionality to work.
         <div>
-            <p class="esd-id">ID: </p>
-            <p class="esd-desc">Desc: </p>
+            <h1 class="esd-id"/>
+            <h2 class="esd-desc"/>
         </div>
         <div id="sliders"></div>
         <br>
         <div id="scale_switch"><label for=chkbx_scale_switch>Log scale for graph</label><input type=checkbox id=chkbx_scale_switch onclick="if(this.checked){drawChart({scaleType: 'log'});} else {drawChart();};"></div>
-        <div id="chart_div"></div>
-        <div id="chart_div_log"></div>
+        <div class="row">
+            <div class="col-md-6" id="chart_div"></div>
+            <div class="col-md-6" id="chart_div_log"></div>
+        </div>
+    </div>
     </body>
 </html>
 
