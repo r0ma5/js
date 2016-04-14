@@ -5,6 +5,8 @@ var gcounts = {
 
 var esdId;
 
+var esd;
+
 function Esd (events) {
     this.events = events || [];
 };
@@ -17,14 +19,31 @@ Esd.prototype = {
         switch(this.fid(id).type){
             case "PIVOTAL":
                 return this.fid(id).probability;
-                break;
             case "INITIATING":
                 return this.fid(id).frequency;
-                break;    
             default:
                 return 0;
         }
-        return this.events.find(function(event){return event.id == id;});
+    },
+    barColor: function (id){
+        console.log("barColor"+id+":"+this.fid(id).type);
+        switch(this.fid(id).type){
+            case "END":
+                switch(this.fid(id).outcome){
+                    case "POSITIVE":
+                        return "green";
+                    case "NEGATIVE":
+                        return "red";
+                    case "NEUTRAL":
+                        return "yellow";
+                    default:
+                        return "blue";
+                }
+            case "INITIATING":
+                return "blue";
+            default:
+                return "blue";
+        }
     },
     initiating: function () {
         return this.events.filter(function(event){return event.type == "INITIATING";});
@@ -130,8 +149,9 @@ function showSliderPanel(b){
 
 function drawOutcomesChartLinear(axle_type) {
     var i=0;
+    var j=0;
 // Define the chart to be drawn.
-    console.log("drawChart");
+    console.log("drawChartLinear");
     esd.outcomes().forEach(function(e){console.log(e.name+' '+e.frequency)});
     var data = new google.visualization.DataTable();
     data.addColumn('string', '');
@@ -143,18 +163,46 @@ function drawOutcomesChartLinear(axle_type) {
         data.addColumn('number', e.name)
         data.addColumn({type: 'string', role: 'tooltip'});
     });
+    var options = {
+        title: esdId,
+        width: 600,
+        height: 400,
+        bar: {groupWidth: "30%"},
+        legend: { position: 'right', maxLines: 10 },
+//        legend: { position: "none" },
+        isStacked: true,
+        series: {0:{}, 1:{}, 2:{}, 3:{}, 4:{}, 5:{}, 6:{}, 7:{}, 8:{}, 9:{}},
+        vAxis: {
+//          scaleType: 'log',
+//          ticks: []
+//          ticks: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]
+        }
+    };
     data.addRows(2);
     data.setCell(0, 0, 'Initiating');
     esd.initiating().forEach(function(e){
+        options.series[j++].color=esd.barColor(e.id);
         data.setCell(0, ++i, e.frequency);
         data.setCell(0, ++i, e.uniqueId+":"+e.name+" ("+Number(e.frequency).toExponential()+")");
-        
     });
+
+//    options.series = {
+//        0: {color: "blue"},
+//        1: {color: "green"},
+//        2: {color: "red"},
+//        3: {color: "yellow"}
+//    };
+    
     data.setCell(1, 0, 'Outcomes');
     esd.outcomes().forEach(function(e){
+        options.series[j++].color=esd.barColor(e.id);
         data.setCell(1, ++i, e.frequency);
         data.setCell(1, ++i, e.uniqueId+":"+e.name+" ("+Number(e.frequency).toExponential()+")");
     });
+
+    console.log(options.series);
+
+
 //    esd.outcomes().forEach(function(e){data.addColumn('number', e.frequency)});
 //    data.addColumn('number', 'One');
 //   data.addColumn('number', 'Two');
@@ -163,20 +211,6 @@ function drawOutcomesChartLinear(axle_type) {
 //        ['Initiating', 0.0000001, null, null, null],
 //        ['Outcomes', null, 0.00000078, 0.00000021, 0.00000001],
 //    ]);
-    var options = {
-        title: esdId,
-        width: 600,
-        height: 600,
-        bar: {groupWidth: "40%"},
-        legend: { position: 'right', maxLines: 10 },
-//        legend: { position: "none" },
-        isStacked: true,
-        vAxis: {
-//          scaleType: 'log',
-//          ticks: []
-//          ticks: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]
-        }
-    };
     options.vAxis = axle_type;
 
       // Instantiate and draw the chart.
@@ -222,8 +256,8 @@ function drawRiskChartLog() {
     var options = {
         title: esdId,
         width: 600,
-        height: 600,
-        bar: {groupWidth: "40%"},
+        height: 400,
+        bar: {groupWidth: "30%"},
         legend: { position: 'right', maxLines: 10 },
 //        legend: { position: "none" },
         isStacked: true,
