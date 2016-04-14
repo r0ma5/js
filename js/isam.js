@@ -5,8 +5,11 @@ var gcounts = {
 
 var esdId;
 
-var esd = {
-    events: [],
+function Esd (events) {
+    this.events = events || [];
+};
+
+Esd.prototype = {
     fid: function (id){
         return this.events.find(function(event){return event.id == id;});
     },
@@ -59,6 +62,7 @@ var esd = {
     },
 };
 
+
 function displayValue(input){
     var id = $("#"+input.id).data("isam-id");
     var newval = input.value;
@@ -82,8 +86,8 @@ function displayValue(input){
     }    
     esd.barriers().forEach(function(e){console.log(e.name+' '+e.probability)});
     esd.calculate();
-    drawChart();
-    drawChartLog();
+    drawOutcomesChartLinear();
+    drawRiskChartLog();
 }
 
 function showSliderTable(b){
@@ -100,8 +104,31 @@ function showSliderTable(b){
     $("#sliders").append(content);
 }
 
+function showSliderPanel(b){
+    var slider_min = (esd.porf(b.id)/2).toFixed(8);
+    var slider_max = (esd.porf(b.id)*1.5).toFixed(8);
+    var slider_step = 0.000000001;
+    var content = 
+    '<div class="panel panel-default">'+
+        '<div class="panel-heading">'+
+            "<div class=row>"+
+                "<div class=col-md-1>"+b.uniqueId+":</div>"+
+                "<div class=col-md-5>"+b.name+"</div>"+
+                "<div class=col-md-6><input id=text_"+b.id+" value="+esd.porf(b.id)+" data-isam-id="+b.id+" onkeyup=displayValue(this)></div>"+
+            "</div>"+
+        "</div>"+
+        '<div class="panel-body">'+
+            "<div class=row>"+
+                "<div class=col-md-1>"+slider_min+"</div>"+
+                "<div class=col-md-10><input type=range id=range_"+b.id+" data-isam-id="+b.id+" min="+slider_min+" max="+slider_max+" step="+slider_step+" value="+esd.porf(b.id)+" onchange=displayValue(this) /></div>"+
+                "<div class=col-md-1>"+slider_max+"</div>"+
+            "</div>"+
+        "</div>"+
+    "</div>";
+    $("#sliders").append(content);
+}
 
-function drawChart(axle_type) {
+function drawOutcomesChartLinear(axle_type) {
     var i=0;
 // Define the chart to be drawn.
     console.log("drawChart");
@@ -138,7 +165,7 @@ function drawChart(axle_type) {
 //    ]);
     var options = {
         title: esdId,
-        width: 800,
+        width: 600,
         height: 600,
         bar: {groupWidth: "40%"},
         legend: { position: 'right', maxLines: 10 },
@@ -158,7 +185,7 @@ function drawChart(axle_type) {
     }
 
 
-function drawChartLog() {
+function drawRiskChartLog() {
     var i=0;
 // Define the chart to be drawn.
     console.log("drawChart");
@@ -194,7 +221,7 @@ function drawChartLog() {
 //    ]);
     var options = {
         title: esdId,
-        width: 800,
+        width: 600,
         height: 600,
         bar: {groupWidth: "40%"},
         legend: { position: 'right', maxLines: 10 },
@@ -203,7 +230,7 @@ function drawChartLog() {
         vAxis: {
           scaleType: 'log',
 //          ticks: []
-//          ticks: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]
+//          ticks: [1e-9]
         }
     };
 
@@ -218,18 +245,18 @@ $(document).ready(function() {
         url: "https://ape-3.saabsensis.com/isam-webservice/safety/v1/eventSequences/45",
         xhrFields: {withCredentials: true}
     }).then(function(data) {
-      google.charts.load('current', {packages: ['corechart']});
-      google.charts.setOnLoadCallback(drawChart);
-            google.charts.setOnLoadCallback(drawChartLog);
-      esd.events = data.events;
-      esdId = data.uniqueId;
-//        console.log(esd.fid(440));
+        google.charts.load('current', {packages: ['corechart']});
+        google.charts.setOnLoadCallback(drawOutcomesChartLinear);
+        google.charts.setOnLoadCallback(drawRiskChartLog);
+//      esd.events = data.events;
+        esd = new Esd(data.events);        
+        esdId = data.uniqueId;
 //       esd.calculate();
-       console.log(esd.outcomes());
-       console.log(esd.barriers());
-       esd.initiating().forEach(showSliderTable);
-       esd.barriers().forEach(showSliderTable);
-       $('.esd-id').text(data.uniqueId);
-       $('.esd-desc').text(data.description);
+        console.log(esd.outcomes());
+        console.log(esd.barriers());
+        esd.initiating().forEach(showSliderPanel);
+        esd.barriers().forEach(showSliderPanel);
+        $('.esd-id').text(data.uniqueId);
+        $('.esd-desc').text(data.description);
     });
 });
