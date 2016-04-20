@@ -7,6 +7,16 @@ var esdId;
 
 var esd;
 
+function sort_outcomes(a,b){
+    if (a.outcome == 'NEGATIVE' && b.outcome == 'NEUTRAL') return 1;
+    if (a.outcome == 'NEGATIVE' && b.outcome == 'POSITIVE') return 1;
+    if (a.outcome == 'NEUTRAL'  && b.outcome == 'POSITIVE') return 1;
+    if (a.outcome == 'NEUTRAL'  && b.outcome == 'NEGATIVE') return -1;
+    if (a.outcome == 'POSITIVE' && b.outcome == 'NEGATIVE') return -1;
+    if (a.outcome == 'POSITIVE' && b.outcome == 'NEUTRAL') return -1;
+    return 0;    
+}
+
 function Esd (events) {
     this.events = events || [];
 };
@@ -124,16 +134,18 @@ function showSliderTable(b){
 }
 
 function showSliderPanel(b){
-    var slider_min = (esd.porf(b.id)/2).toFixed(8);
-    var slider_max = (esd.porf(b.id)*1.5).toFixed(8);
+//    var slider_min = (esd.porf(b.id)/2).toFixed(8);
+//    var slider_max = (esd.porf(b.id)*1.5).toFixed(8);
+    var slider_min = 0;
+    var slider_max = 1;
     var slider_step = 0.000000001;
     var content = 
     '<div class="panel panel-default">'+
         '<div class="panel-heading">'+
             "<div class=row>"+
-                "<div class=col-md-1>"+b.uniqueId+":</div>"+
+                "<div class=col-md-3>"+b.uniqueId+":</div>"+
                 "<div class=col-md-5>"+b.name+"</div>"+
-                "<div class=col-md-6><input id=text_"+b.id+" value="+esd.porf(b.id)+" data-isam-id="+b.id+" onkeyup=displayValue(this)></div>"+
+                "<div class=col-md-4><input id=text_"+b.id+" value="+esd.porf(b.id)+" data-isam-id="+b.id+" onkeyup=displayValue(this)></div>"+
             "</div>"+
         "</div>"+
         '<div class="panel-body">'+
@@ -159,8 +171,9 @@ function drawOutcomesChartLinear(axle_type) {
         data.addColumn('number', e.name);
         data.addColumn({type: 'string', role: 'tooltip'});
     });
-    esd.outcomes().forEach(function(e){
-        data.addColumn('number', e.name)
+    console.log(esd.outcomes().sort(sort_outcomes));
+    esd.outcomes().sort(function(a,b){if(a.outcome < b.outcome) return -1; if(a.outcome > b.outcome) return 1; return 0;}).forEach(function(e){
+        data.addColumn('number', e.name);
         data.addColumn({type: 'string', role: 'tooltip'});
     });
     var options = {
@@ -194,7 +207,7 @@ function drawOutcomesChartLinear(axle_type) {
 //    };
     
     data.setCell(1, 0, 'Outcomes');
-    esd.outcomes().forEach(function(e){
+    esd.outcomes().sort(sort_outcomes).forEach(function(e){
         options.series[j++].color=esd.barColor(e.id);
         data.setCell(1, ++i, e.frequency);
         data.setCell(1, ++i, e.uniqueId+":"+e.name+" ("+Number(e.frequency).toExponential()+")");
@@ -276,7 +289,8 @@ function drawRiskChartLog() {
 
 $(document).ready(function() {
     $.ajax({
-        url: "https://ape-3.saabsensis.com/isam-webservice/safety/v1/eventSequences/45",
+//        url: "https://ape-3.saabsensis.com/isam-webservice/safety/v1/eventSequences/45",
+        url: "https://ape-3.saabsensis.com/isam-webservice/safety/v1/eventSequences/636",
         xhrFields: {withCredentials: true}
     }).then(function(data) {
         google.charts.load('current', {packages: ['corechart']});

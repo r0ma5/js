@@ -1,31 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
-<html>
-    <head>
-        <title>ISAM ESD</title>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-        <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-        <script src="js/isam.js"></script>
-    </head>
+<head>
+    <title>ISAM what if</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script src="js/isam.js"></script>
 
-    <body>
-    <div class="container">
-        <a href=https://ape-3.saabsensis.com/userweb/authentication/view/portal onclick="window.open(this);return false;">ISAM Login</a>
-        in different window and reload this one for "What-If" functionality to work.
-        <div>
-            <h2 class="esd-id"/>
-            <h3 class="esd-desc"/>
+</head>
+<body>
+ 
+<div class="container-fluid">
+    <a href=https://ape-3.saabsensis.com/userweb/authentication/view/portal onclick="window.open(this);return false;">ISAM Login</a> in different window and reload this one for "What-If" functionality to work.
+    <h4 class="esd-id"></h4>
+    <h5 class="esd-desc"></h5>
+    <div class="row">
+        <div class="col-md-6">
+            <div id="sliders" class="panel-group"></div>
         </div>
-        <div id="sliders"></div>
-        <br>
-        <div id="scale_switch"><label for=chkbx_scale_switch>Log scale for graph</label><input type=checkbox id=chkbx_scale_switch onclick="if(this.checked){drawChart({scaleType: 'log'});} else {drawChart();};"></div>
-        <table>
-            <tr>
-            <td><div id="chart_div"/></td>
-            <td><div id="chart_div_log"/></td>
-            </tr>
-        </table>
+        <div class="col-md-6">
+            <p id="chart_div"/>
+            <p id="chart_div_log"/>
+        </div>
     </div>
-    </body>
+</div>
+</body>
 </html>
-
