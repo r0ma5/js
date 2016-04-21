@@ -17,8 +17,29 @@ function sort_outcomes(a,b){
     return 0;    
 }
 
+function FaultTree (ft) {
+    this.rootNode = ft.rootNodeId;
+    this.nodes = ft.faultTreeNodes || [];
+}
+
+FaultTree.prototype = {
+    fid: function (id){
+        return this.nodes.find(function(node){return node.id == id;});
+    }
+};
+
 function Esd (events) {
     this.events = events || [];
+    this.events.forEach(function(e){
+        console.log("initial assignment");   
+        if (e.faultTree){
+            e.ft = new FaultTree(e.faultTree);
+            console.log("array of fault tree nodes");
+            console.log(e.faultTree.faultTreeNodes);
+            console.log("FaultTree object");
+            console.log(e.ft);
+        } 
+    }, this);
 };
 
 Esd.prototype = {
@@ -90,6 +111,8 @@ Esd.prototype = {
         }
     },
 };
+
+
 
 
 function displayValue(input){
@@ -172,7 +195,7 @@ function drawOutcomesChartLinear(axle_type) {
         data.addColumn({type: 'string', role: 'tooltip'});
     });
     console.log(esd.outcomes().sort(sort_outcomes));
-    esd.outcomes().sort(function(a,b){if(a.outcome < b.outcome) return -1; if(a.outcome > b.outcome) return 1; return 0;}).forEach(function(e){
+    esd.outcomes().sort(sort_outcomes).forEach(function(e){
         data.addColumn('number', e.name);
         data.addColumn({type: 'string', role: 'tooltip'});
     });
