@@ -1,6 +1,16 @@
 var gcounts = {
     recursion_level: 0,
-    recursion_depth: 64
+    recursion_depth: 1024
+};
+
+var hc_barriers = {
+    "US31_11_02_16_Fa1.1.1": "Aircraft on converging flight paths",
+    "US31_11_02_16_Fa1.1.2": "Failure of management of developing conflict",
+    "US31_11_02_16_Fa1.2":   "Infringement results in collision course", 
+    "US31_11_02_16_Fc1.1":   "Unsuccessful TCAS avoidance",
+    "US31_11_02_16_Fc1.2":   "Unsuccessful visual avoidance",
+    "US31_11_02_16_Fb1":     "ATC does not resolve conflict",
+    "US31_11_02_16_Fd1":     "No providence", 
 };
 
 var esdId;
@@ -25,19 +35,51 @@ function FaultTree (ft) {
 FaultTree.prototype = {
     fid: function (id){
         return this.nodes.find(function(node){return node.id == id;});
+    },
+    fuid: function (uid){
+        return this.nodes.find(function(node){return node.uniqueIdid == uid;});
+    },
+    calculate: function myself (nid){
+        if (gcounts.recursion_level++ > gcounts.recursion_depth) return -1; //safety check to avoid stack issues
+        if (nid == null || nid == undefined){
+//            console.log("start of the tree traverse");
+            gcounts.recursion_level=0;
+            return this.calculate(this.rootNode);
+        } else {
+            var ftnode = this.fid(nid);
+//            console.log("level:"+gcounts.recursion_level+" evaluating ft node:"+nid+" type:"+ftnode.type);
+            if (ftnode.type == 'BASE_EVENT'){
+                console.log("ft node:"+nid+" type:"+ftnode.type+" cprob:"+ftnode.probability);
+                return ftnode.probability;
+            } else if (ftnode.type == 'AND'){
+                var and_prob = 1;
+                for (var i = 0; i < ftnode.childIds.length; i++){
+                    and_prob*=this.calculate(ftnode.childIds[i]);
+                }
+                console.log("Evaluated ft node:"+nid+" type:"+ftnode.type+" oprob:"+ftnode.probability+" and_prob:"+and_prob);
+                return and_prob;
+            } else if (ftnode.type == 'OR'){
+                var or_prob = 0;
+                for (var i = 0; i < ftnode.childIds.length; i++){
+                    or_prob+=this.calculate(ftnode.childIds[i]);
+                }
+                console.log("Evaluated ft node:"+nid+" type:"+ftnode.type+" oprob:"+ftnode.probability+" or_prob:"+or_prob);
+                return or_prob;
+            }
+//            console.log("!!!!!!!!!!!!!!!!!!");
+        }
+//        console.log("nid:"+nid+"???????????????????");
+        return -2;
     }
 };
 
 function Esd (events) {
     this.events = events || [];
     this.events.forEach(function(e){
-        console.log("initial assignment");   
         if (e.faultTree){
             e.ft = new FaultTree(e.faultTree);
-            console.log("array of fault tree nodes");
-            console.log(e.faultTree.faultTreeNodes);
-            console.log("FaultTree object");
-            console.log(e.ft);
+            console.log("calculated from ft:"+e.ft.calculate());
+            console.log(e.uniqueId+":"+e.type+":"+e.probability+":"+e.frequency);
         } 
     }, this);
 };
@@ -45,6 +87,9 @@ function Esd (events) {
 Esd.prototype = {
     fid: function (id){
         return this.events.find(function(event){return event.id == id;});
+    },
+    fuid: function (uid){
+        return this.events.find(function(event){return event.uniqueId == uid;});
     },
     porf: function (id){
         switch(this.fid(id).type){
@@ -194,7 +239,7 @@ function drawOutcomesChartLinear(axle_type) {
         data.addColumn('number', e.name);
         data.addColumn({type: 'string', role: 'tooltip'});
     });
-    console.log(esd.outcomes().sort(sort_outcomes));
+//    console.log(esd.outcomes().sort(sort_outcomes));
     esd.outcomes().sort(sort_outcomes).forEach(function(e){
         data.addColumn('number', e.name);
         data.addColumn({type: 'string', role: 'tooltip'});
@@ -236,7 +281,7 @@ function drawOutcomesChartLinear(axle_type) {
         data.setCell(1, ++i, e.uniqueId+":"+e.name+" ("+Number(e.frequency).toExponential()+")");
     });
 
-    console.log(options.series);
+//    console.log(options.series);
 
 
 //    esd.outcomes().forEach(function(e){data.addColumn('number', e.frequency)});
@@ -258,7 +303,7 @@ function drawOutcomesChartLinear(axle_type) {
 function drawRiskChartLog() {
     var i=0;
 // Define the chart to be drawn.
-    console.log("drawChart");
+    console.log("drawChartLog");
     esd.outcomes().forEach(function(e){console.log(e.name+' '+e.frequency)});
     var data = new google.visualization.DataTable();
     data.addColumn('string', '');
@@ -323,8 +368,8 @@ $(document).ready(function() {
         esd = new Esd(data.events);        
         esdId = data.uniqueId;
 //       esd.calculate();
-        console.log(esd.outcomes());
-        console.log(esd.barriers());
+//        console.log(esd.outcomes());
+//        console.log(esd.barriers());
         esd.initiating().forEach(showSliderPanel);
         esd.barriers().forEach(showSliderPanel);
         $('.esd-id').text(data.uniqueId);
