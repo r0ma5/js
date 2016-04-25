@@ -49,22 +49,30 @@ FaultTree.prototype = {
             var ftnode = this.fid(nid);
 //            console.log("level:"+gcounts.recursion_level+" evaluating ft node:"+nid+" type:"+ftnode.type);
             if (ftnode.type == 'BASE_EVENT'){
-                console.log("ft node:"+nid+" type:"+ftnode.type+" cprob:"+ftnode.probability);
+                console.log("Evaluated ft node:"+ftnode.uniqueId+" type:"+ftnode.type+" oprob:"+ftnode.probability);
                 return ftnode.probability;
             } else if (ftnode.type == 'AND'){
                 var and_prob = 1;
                 for (var i = 0; i < ftnode.childIds.length; i++){
                     and_prob*=this.calculate(ftnode.childIds[i]);
                 }
-                console.log("Evaluated ft node:"+nid+" type:"+ftnode.type+" oprob:"+ftnode.probability+" and_prob:"+and_prob);
+                console.log("Evaluated ft node:"+ftnode.uniqueId+" type:"+ftnode.type+" oprob:"+ftnode.probability+" and_prob:"+and_prob);
                 return and_prob;
-            } else if (ftnode.type == 'OR'){
-                var or_prob = 0;
+            } else if (ftnode.type == 'OR'){ // Alan: P(A) = 1 – product(1 – P(Bi)) non-mutually excluvie nodes
+                var or_prob = 1;
+                for (var i = 0; i < ftnode.childIds.length; i++){
+                    or_prob*=(1-this.calculate(ftnode.childIds[i]));
+                }
+                or_prob = 1-or_prob;
+                console.log("Evaluated ft node:"+ftnode.uniqueId+" type:"+ftnode.type+" oprob:"+ftnode.probability+" or_prob:"+or_prob);
+                return or_prob;
+            } else if (ftnode.type == 'XOR'){
+                var xor_prob = 0;
                 for (var i = 0; i < ftnode.childIds.length; i++){
                     or_prob+=this.calculate(ftnode.childIds[i]);
                 }
-                console.log("Evaluated ft node:"+nid+" type:"+ftnode.type+" oprob:"+ftnode.probability+" or_prob:"+or_prob);
-                return or_prob;
+                console.log("Evaluated ft node:"+ftnode.uniqueId+" type:"+ftnode.type+" oprob:"+ftnode.probability+" xor_prob:"+xor_prob);
+                return xor_prob;
             }
 //            console.log("!!!!!!!!!!!!!!!!!!");
         }
