@@ -1,6 +1,8 @@
 var gcounts = {
-    recursion_level: 0,
-    recursion_depth: 1024
+    esd_recursion_level: 0,
+    esd_recursion_depth: 64,
+    ft_recursion_level: 0,
+    ft_recursion_depth: 1024,
 };
 
 var hc_barriers = {
@@ -40,23 +42,23 @@ FaultTree.prototype = {
         return this.nodes.find(function(node){return node.uniqueIdid == uid;});
     },
     calculate: function myself (nid){
-        if (gcounts.recursion_level++ > gcounts.recursion_depth) return -1; //safety check to avoid stack issues
+        if (gcounts.ft_recursion_level++ > gcounts.ft_recursion_depth) return -1; //safety check to avoid stack issues
         if (nid == null || nid == undefined){
-//            console.log("start of the tree traverse");
-            gcounts.recursion_level=0;
+            console.log("start of the ftree traverse");
+            gcounts.ft_recursion_level=0;
             return this.calculate(this.rootNode);
         } else {
             var ftnode = this.fid(nid);
 //            console.log("level:"+gcounts.recursion_level+" evaluating ft node:"+nid+" type:"+ftnode.type);
             if (ftnode.type == 'BASE_EVENT'){
-                console.log("Evaluated ft node:"+ftnode.uniqueId+" type:"+ftnode.type+" oprob:"+ftnode.probability);
+//                console.log("Evaluated ft node:"+ftnode.uniqueId+" type:"+ftnode.type+" oprob:"+ftnode.probability);
                 return ftnode.probability;
             } else if (ftnode.type == 'AND'){
                 var and_prob = 1;
                 for (var i = 0; i < ftnode.childIds.length; i++){
                     and_prob*=this.calculate(ftnode.childIds[i]);
                 }
-                console.log("Evaluated ft node:"+ftnode.uniqueId+" type:"+ftnode.type+" oprob:"+ftnode.probability+" and_prob:"+and_prob);
+//                console.log("Evaluated ft node:"+ftnode.uniqueId+" type:"+ftnode.type+" oprob:"+ftnode.probability+" and_prob:"+and_prob);
                 return and_prob;
             } else if (ftnode.type == 'OR'){ // Alan: P(A) = 1 – product(1 – P(Bi)) non-mutually excluvie nodes
                 var or_prob = 1;
@@ -64,14 +66,14 @@ FaultTree.prototype = {
                     or_prob*=(1-this.calculate(ftnode.childIds[i]));
                 }
                 or_prob = 1-or_prob;
-                console.log("Evaluated ft node:"+ftnode.uniqueId+" type:"+ftnode.type+" oprob:"+ftnode.probability+" or_prob:"+or_prob);
+//                console.log("Evaluated ft node:"+ftnode.uniqueId+" type:"+ftnode.type+" oprob:"+ftnode.probability+" or_prob:"+or_prob);
                 return or_prob;
             } else if (ftnode.type == 'XOR'){
                 var xor_prob = 0;
                 for (var i = 0; i < ftnode.childIds.length; i++){
                     or_prob+=this.calculate(ftnode.childIds[i]);
                 }
-                console.log("Evaluated ft node:"+ftnode.uniqueId+" type:"+ftnode.type+" oprob:"+ftnode.probability+" xor_prob:"+xor_prob);
+//                console.log("Evaluated ft node:"+ftnode.uniqueId+" type:"+ftnode.type+" oprob:"+ftnode.probability+" xor_prob:"+xor_prob);
                 return xor_prob;
             }
 //            console.log("!!!!!!!!!!!!!!!!!!");
@@ -86,8 +88,21 @@ function Esd (events) {
     this.events.forEach(function(e){
         if (e.faultTree){
             e.ft = new FaultTree(e.faultTree);
-            console.log("calculated from ft:"+e.ft.calculate());
-            console.log(e.uniqueId+":"+e.type+":"+e.probability+":"+e.frequency);
+            var calculated_pof = e.ft.calculate();
+            switch (e.type){
+                case "INITIATING":
+                    if (e.frequency != calculated_pof){
+                        console.log("!!!!!"+e.uniqueId+":"+e.type+":"+e.probability+":"+e.frequency);
+                        console.log("!!!!! calculated from ft:"+calculated_pof);
+                    }
+                    break;
+                default:
+                    if (e.probability != calculated_pof){
+                        console.log("!!!!!"+e.uniqueId+":"+e.type+":"+e.probability+":"+e.frequency);
+                        console.log("!!!!! calculated from ft:"+calculated_pof);
+                    }
+                    break;
+            }
         } 
     }, this);
 };
@@ -140,18 +155,20 @@ Esd.prototype = {
     },
     calculate: function myself (event, freq, prb){
         console.log("--------");
-        console.log("recursion level:"+gcounts.recursion_level);
+        console.log("recursion level:"+gcounts.esd_recursion_level);
         console.log("f:"+freq);
         console.log("p:"+prb);
         console.log(event);
-        if (gcounts.recursion_level++ > gcounts.recursion_depth) return; //safety check to avoid stack issues
+        if (gcounts.esd_recursion_level++ > gcounts.esd_recursion_depth) return -1; //safety check to avoid stack issues....potential residue from previous calc
         if (event == null || event == undefined){ //find starting point(s)
-            gcounts.recursion_level=0;
+            gcounts.esd_recursion_level=0;
             console.log("looking for INITIATING event");
             this.initiating().forEach(function(e){this.calculate(e,1,1)}, this);
         } else if (event.type == "INITIATING"){
             console.log("Found INITIATING event");
             console.log(event.childIds);
+            //priority are as follows: 1-manual override; 2-ft calculation if ft is present; 3-residual value
+            event.frequency=(event.manual_override?event.frequency:(event.ft?event.ft.calculate():event.frequency)); //re-run ft if exists to get correct freq
             event.childIds.forEach(function(i){this.calculate(this.fid(i), event.frequency,1)},this);
         } else if (event.type == "END") {
             event.frequency = event.parentRelationType == "YES" ? freq*prb : freq*(1.0-prb);
@@ -159,6 +176,7 @@ Esd.prototype = {
             return;
         } else if (event.type == "PIVOTAL"){
             event.frequency = event.parentRelationType == "YES" ? freq*prb : freq*(1.0-prb);
+            event.probability=(event.manual_override?event.probability:(event.ft?event.ft.calculate():event.probability)); //re-run ft if exists to get correct probability
             console.log("result:"+event.frequency);
             event.childIds.forEach(function(i){this.calculate(this.fid(i), event.frequency,event.probability)},this);
         }
@@ -189,6 +207,7 @@ function displayValue(input){
             esd.fid(id).frequency=newval;
             break;
     }    
+    esd.fid(id).manual_override=1; //marking this node as manual override for stop condiition in tree traverse
     esd.barriers().forEach(function(e){console.log(e.name+' '+e.probability)});
     esd.calculate();
     drawOutcomesChartLinear();
@@ -240,6 +259,7 @@ function drawOutcomesChartLinear(axle_type) {
     var j=0;
 // Define the chart to be drawn.
     console.log("drawChartLinear");
+    esd.initiating().forEach(function(e){console.log(e.name+' '+e.frequency)});
     esd.outcomes().forEach(function(e){console.log(e.name+' '+e.frequency)});
     var data = new google.visualization.DataTable();
     data.addColumn('string', '');
@@ -366,7 +386,7 @@ function drawRiskChartLog() {
 $(document).ready(function() {
     $.ajax({
 //        url: "https://ape-3.saabsensis.com/isam-webservice/safety/v1/eventSequences/45",
-        url: "https://ape-3.saabsensis.com/isam-webservice/safety/v1/eventSequences/636",
+        url: "https://ape-3.saabsensis.com/isam-webservice/safety/v1/eventSequences/101202",
         xhrFields: {withCredentials: true}
     }).then(function(data) {
         google.charts.load('current', {packages: ['corechart']});
