@@ -153,6 +153,9 @@ Esd.prototype = {
     outcomes: function () {
         return this.events.filter(function(event){return event.type == "END";});
     },
+    non_positive_outcomes: function () {
+        return this.events.filter(function(event){return (event.type == "END" && event.outcome != "POSITIVE");});
+    },
     barriers: function () {
         return this.events.filter(function(event){return event.type == "PIVOTAL";});
     },
@@ -224,6 +227,7 @@ function displayValue(input){
 //    esd.barriers().forEach(function(e){console.log(e.name+' '+e.probability)});
     esd.calculate();
     drawOutcomesChartLinear();
+    drawNonPositiveOutcomesPieChart();
     drawRiskChartLog();
 }
 
@@ -253,8 +257,7 @@ function showSliderPanel(b){
     '<div class="panel panel-default">'+
         '<div class="panel-heading">'+
             "<div class=row>"+
-                "<div class=col-md-3>"+b.uniqueId+":</div>"+
-                "<div class=col-md-5>"+b.name+"</div>"+
+                "<div class=col-md-8>"+b.uniqueId+": "+b.name+"</div>"+
                 "<div class=col-md-4><input id=text_"+b.id+" value="+slider_value+" data-isam-id="+b.id+" onkeyup=displayValue(this)></div>"+
             "</div>"+
         "</div>"+
@@ -339,6 +342,41 @@ function drawOutcomesChartLinear(axle_type) {
 
       // Instantiate and draw the chart.
       var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
+      chart.draw(data, options);
+    }
+
+function drawNonPositiveOutcomesPieChart() {
+    var i=0;
+    var j=0;
+// Define the chart to be drawn.
+    console.log("PieChart");
+    esd.non_positive_outcomes().forEach(function(e){console.log(e.name+' '+e.frequency)});
+    var data = new google.visualization.DataTable();
+    data.addColumn('string', '');
+    data.addColumn('number', '');
+    data.addColumn({type: 'string', role: 'tooltip'});
+    var options = {
+        title: "Distribution of non-positive outcomes",
+        width: 600,
+        height: 400,
+        pieSliceText: 'label',
+//        legend: 'none',
+        pieSliceTextStyle: {
+            color: 'black',
+          },
+        slices: {0:{}, 1:{}, 2:{}, 3:{}, 4:{}, 5:{}, 6:{}, 7:{}, 8:{}, 9:{}},
+    };
+    data.addRows(esd.non_positive_outcomes().length);
+    esd.non_positive_outcomes().forEach(function(e){
+        options.slices[i].color=esd.barColor(e.id);
+        data.setCell(i, 0, e.name);
+        data.setCell(i, 1, e.frequency);
+        data.setCell(i, 2, e.uniqueId+":"+e.name+" ("+Number(e.frequency).toExponential()+")");
+        i++;
+    });
+
+      // Instantiate and draw the chart.
+      var chart = new google.visualization.PieChart(document.getElementById('chart_div_pie'));
       chart.draw(data, options);
     }
 
@@ -437,6 +475,7 @@ $(document).ready(function() {
     }).then(function(data) {
         google.charts.load('current', {packages: ['corechart']});
         google.charts.setOnLoadCallback(drawOutcomesChartLinear);
+        google.charts.setOnLoadCallback(drawNonPositiveOutcomesPieChart);
         google.charts.setOnLoadCallback(drawRiskChartLog);
 //      esd.events = data.events;
         esd = new Esd(data.events);        
