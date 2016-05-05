@@ -9,28 +9,22 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script src="js/isam.js"></script>
+
 </head>
 <body>
  
 <div class="container-fluid">
     <a href=https://ape-3.saabsensis.com/userweb/authentication/view/portal onclick="window.open(this);return false;">ISAM Login</a> in different window and reload this one for "What-If" functionality to work.
     <h4 class="esd-id"></h4>
+    <h5 class="esd-desc"></h5>
     <div class="row">
-        <div class="panel panel-success">
-            <div id="esd-desc" class="panel-heading"></div>
-            <div class="panel-body">
-                <div class="col-md-4" id="chart_div"></div>
-                <div class="col-md-4" id="chart_div_pie"></div>
-                <div class="col-md-4" id="chart_div_log"></div>
-            </div>
+        <div class="col-md-5">
+            <div id="sliders" class="panel-group"></div>
         </div>
-    </div>
-    <div class="row">
-        <div class="panel panel-success">
-            <div class="panel-heading">Barriers</div>
-                <div class="col-md-12">
-                    <div id="sliders" class="panel-body"></div>
-                </div>
+        <div class="col-md-7">
+            <p id="chart_div"/>
+            <p id="chart_div_pie"/>
+            <p id="chart_div_log"/>
         </div>
     </div>
 </div>

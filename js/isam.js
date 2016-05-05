@@ -232,16 +232,18 @@ function displayValue(input){
 }
 
 function showSliderTable(b){
-    var slider_min = (esd.porf(b.id)/2).toFixed(8);
-    var slider_max = (esd.porf(b.id)*1.5).toFixed(8);
+    var slider_min = 0;
+    var slider_max = 1;
     var slider_step = 0.000000001;
-    var content = "<table border=0 width=600>"+
-    "<tr><td width=50><span>"+b.uniqueId+":</span></td>"+
-    "<td width=350><span>"+b.name+"</span></td>"+
-    "<td width=200><input id=text_"+b.id+" value="+esd.porf(b.id)+" data-isam-id="+b.id+" onkeyup=displayValue(this)></td>"+
-    "</tr><tr><td colspan=3>"+slider_min+
-    "<input type=range style=width:400px id=range_"+b.id+" data-isam-id="+b.id+" min="+slider_min+" max="+slider_max+" step="+slider_step+" value="+esd.porf(b.id)+" onchange=displayValue(this) />"+
-    slider_max+"</td></tr></table>";
+    var slider_value = (b.type?(b.type == 'INITIATING' ? b.frequency:b.probability):b.probability); //esd.porf(b.id)
+    var slider_id = "range_"+b.id;
+    var text_id = "text_"+b.id;
+    var content = 
+    "<label for="+slider_id+">"+b.uniqueId+": "+b.name+"</label>"+
+    "<input id="+text_id+" value="+slider_value+" data-isam-id="+b.id+" onkeyup=displayValue(this)>"+
+    "<span>"+slider_min+"</span>"+
+    "<input type=range id="+slider_id+" data-isam-id="+b.id+" min="+slider_min+" max="+slider_max+" step="+slider_step+" value="+slider_value+" onchange=displayValue(this) />"+
+    "<span>"+slider_max+"</span>";
     $("#sliders").append(content);
 }
 
@@ -272,6 +274,26 @@ function showSliderPanel(b){
     $("#sliders").append(content);
 }
 
+function showSliderPanel1(b){
+//    var slider_min = (esd.porf(b.id)/2).toFixed(8);
+//    var slider_max = (esd.porf(b.id)*1.5).toFixed(8);
+//    console.log("slider for "+b);
+    var slider_min = 0;
+    var slider_max = 1;
+    var slider_step = 0.000000001;
+    var slider_value = (b.type?(b.type == 'INITIATING' ? b.frequency:b.probability):b.probability); //esd.porf(b.id)
+    var content = 
+//    '<div class="panel panel-success">'+
+            "<div class=row>"+
+                "<div class=col-md-4>"+b.uniqueId+": "+b.name+"</div>"+
+                "<div class=col-md-6><input type=range id=range_"+b.id+" data-isam-id="+b.id+" min="+slider_min+" max="+slider_max+" step="+slider_step+" value="+slider_value+" onchange=displayValue(this) /></div>"+
+                "<div class=col-md-2><input id=text_"+b.id+" value="+slider_value+" data-isam-id="+b.id+" onkeyup=displayValue(this)></div>"+
+//            "</div>"+
+    "</div>";
+    $("#sliders").append(content);
+}
+
+
 function drawOutcomesChartLinear(axle_type) {
     var i=0;
     var j=0;
@@ -294,8 +316,8 @@ function drawOutcomesChartLinear(axle_type) {
         title: esdId,
         width: 600,
         height: 400,
-        bar: {groupWidth: "30%"},
-        legend: { position: 'right', maxLines: 10 },
+        bar: {groupWidth: "40%"},
+        legend: { position: 'bottom'},
 //        legend: { position: "none" },
         isStacked: true,
         series: {0:{}, 1:{}, 2:{}, 3:{}, 4:{}, 5:{}, 6:{}, 7:{}, 8:{}, 9:{}},
@@ -450,8 +472,8 @@ function drawRiskChartLog() {
         title: esdId,
         width: 600,
         height: 400,
-        bar: {groupWidth: "30%"},
-        legend: { position: 'right', maxLines: 10 },
+        bar: {groupWidth: "20%"},
+        legend: { position: 'bottom', maxLines: 10 },
 //        legend: { position: "none" },
         isStacked: true,
         vAxis: {
@@ -488,17 +510,17 @@ $(document).ready(function() {
         for (var b in hc_barriers){
 //            console.log(b+":"+hc_barriers[b]);
             if(esd.fuid(b)){
-                showSliderPanel(esd.fuid(b));
+                showSliderPanel1(esd.fuid(b));
             } else {
                 esd.events_with_ft().forEach(function(e){
                     if(e.ft.fuid(b)){
 //                      console.log(e.ft.fuid(b));
-                        showSliderPanel(e.ft.fuid(b));
+                        showSliderPanel1(e.ft.fuid(b));
                     }
                 });
             }
         }
         $('.esd-id').text(data.uniqueId);
-        $('.esd-desc').text(data.description);
+        $('#esd-desc').text(data.description);
     });
 });
