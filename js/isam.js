@@ -254,7 +254,7 @@ function showSliderPanel(b){
     var slider_step = 0.000000001;
     var slider_value = (b.type?(b.type == 'INITIATING' ? b.frequency:b.probability):b.probability); //esd.porf(b.id)
     var content = 
-    '<div class="panel panel-default">'+
+    '<div class="panel panel-success">'+
         '<div class="panel-heading">'+
             "<div class=row>"+
                 "<div class=col-md-8>"+b.uniqueId+": "+b.name+"</div>"+
@@ -360,14 +360,14 @@ function drawNonPositiveOutcomesPieChart() {
         width: 600,
         height: 400,
         pieSliceText: 'label',
-//        legend: 'none',
+        legend: {position: 'bottom'},
         pieSliceTextStyle: {
             color: 'black',
           },
         slices: {0:{}, 1:{}, 2:{}, 3:{}, 4:{}, 5:{}, 6:{}, 7:{}, 8:{}, 9:{}},
     };
     data.addRows(esd.non_positive_outcomes().length);
-    esd.non_positive_outcomes().forEach(function(e){
+    esd.non_positive_outcomes().sort(sort_outcomes).forEach(function(e){
         options.slices[i].color=esd.barColor(e.id);
         data.setCell(i, 0, e.name);
         data.setCell(i, 1, e.frequency);
