@@ -9,9 +9,9 @@ var hc_barriers = {
     "US31_11_02_16_Fa1.1.1": "Aircraft on converging flight paths",
     "US31_11_02_16_Fa1.1.2": "Failure of management of developing conflict",
     "US31_11_02_16_Fa1.2":   "Infringement results in collision course", 
+    "US31_11_02_16_Fb1":     "ATC does not resolve conflict",
     "US31_11_02_16_Fc1.1":   "Unsuccessful TCAS avoidance",
     "US31_11_02_16_Fc1.2":   "Unsuccessful visual avoidance",
-    "US31_11_02_16_Fb1":     "ATC does not resolve conflict",
     "US31_11_02_16_Fd1":     "No providence", 
 };
 
@@ -198,9 +198,11 @@ function displayValue(input){
     console.log("ID:"+id+" type:"+input.type+" VAL:"+newval);
     switch(input.type){
         case "text":
+            newval = input.value;
             $("#range_"+id).val(newval);
             break;
         case "range":
+            newval = Math.exp(input.value);
             $("#text_"+id).val(newval);
             break;
     }
@@ -278,15 +280,16 @@ function showSliderPanel1(b){
 //    var slider_min = (esd.porf(b.id)/2).toFixed(8);
 //    var slider_max = (esd.porf(b.id)*1.5).toFixed(8);
 //    console.log("slider for "+b);
-    var slider_min = 0;
-    var slider_max = 1;
+    var slider_min = -25;
+    var slider_max = 0;
     var slider_step = 0.000000001;
     var slider_value = (b.type?(b.type == 'INITIATING' ? b.frequency:b.probability):b.probability); //esd.porf(b.id)
+    var log_slider_value = Math.log(slider_value);
     var content = 
 //    '<div class="panel panel-success">'+
             "<div class=row>"+
                 "<div class=col-md-4>"+b.uniqueId+": "+b.name+"</div>"+
-                "<div class=col-md-6><input type=range id=range_"+b.id+" data-isam-id="+b.id+" min="+slider_min+" max="+slider_max+" step="+slider_step+" value="+slider_value+" onchange=displayValue(this) /></div>"+
+                "<div class=col-md-6><input type=range id=range_"+b.id+" data-isam-id="+b.id+" min="+slider_min+" max="+slider_max+" step="+slider_step+" value="+log_slider_value+" onchange=displayValue(this) /></div>"+
                 "<div class=col-md-2><input id=text_"+b.id+" value="+slider_value+" data-isam-id="+b.id+" onkeyup=displayValue(this)></div>"+
 //            "</div>"+
     "</div>";
@@ -313,11 +316,11 @@ function drawOutcomesChartLinear(axle_type) {
         data.addColumn({type: 'string', role: 'tooltip'});
     });
     var options = {
-        title: esdId,
+        title: "ESD Event Probabilities",
         width: 600,
         height: 400,
         bar: {groupWidth: "40%"},
-        legend: { position: 'bottom'},
+        legend: { position: 'bottom', maxLines: 10},
 //        legend: { position: "none" },
         isStacked: true,
         series: {0:{}, 1:{}, 2:{}, 3:{}, 4:{}, 5:{}, 6:{}, 7:{}, 8:{}, 9:{}},
@@ -469,7 +472,7 @@ function drawRiskChartLog() {
 //        ['Outcomes', null, 0.00000078, 0.00000021, 0.00000001],
 //    ]);
     var options = {
-        title: esdId,
+        title: "Barrier Contribution to Risk of Mid-Air Collision",
         width: 600,
         height: 400,
         bar: {groupWidth: "20%"},
