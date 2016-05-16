@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>ISAM what if</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script src="js/isam.js"></script>
+</head>
+<body>
+ 
+<div class="container-fluid">
+    <a href=https://ape-3.saabsensis.com/userweb/authentication/view/portal onclick="window.open(this);return false;">ISAM Login</a> in different window and reload this one for "What-If" functionality to work.
+    <h4 class="esd-id"></h4>
+    <div class="row">
+        <div class="panel panel-success">
+            <div id="esd-desc" class="panel-heading"></div>
+            <div class="panel-body">
+                <div class="col-md-4" id="chart_div"></div>
+                <div class="col-md-4" id="chart_div_log"></div>
+                <div class="col-md-4" id="chart_div_pie"></div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="panel panel-success">
+            <div class="panel-heading">Barriers [0..1]</div>
+                <div class="col-md-12">
+                    <div id="sliders" class="panel-body"></div>
+                    <datalist id="ticks">
+                        <option>0</option>
+                        <option>0.1</option>
+                        <option>0.2</option>
+                        <option>0.3</option>
+                        <option>0.4</option>
+                        <option>0.5</option>
+                        <option>0.6</option>
+                        <option>0.7</option>
+                        <option>0.8</option>
+                        <option>0.9</option>
+                        <option>1</option>
+                    </datalist>
+                </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -317,10 +317,11 @@ function drawOutcomesChartLinear(axle_type) {
     });
     var options = {
         title: "ESD Event Probabilities",
-        width: 600,
+        width: 800,
         height: 400,
-        bar: {groupWidth: "40%"},
-        legend: { position: 'bottom', maxLines: 10},
+        bar: {groupWidth: "30%"},
+        chartArea: {width: 400, left: 75, top: 35, height: 300},
+        legend: { position: 'right', maxLines: 10},
 //        legend: { position: "none" },
         isStacked: true,
         series: {0:{}, 1:{}, 2:{}, 3:{}, 4:{}, 5:{}, 6:{}, 7:{}, 8:{}, 9:{}},
@@ -385,6 +386,7 @@ function drawNonPositiveOutcomesPieChart() {
         width: 600,
         height: 400,
         pieSliceText: 'label',
+        chartArea: {left: 20, top: 45, height: 300},
         legend: {position: 'bottom'},
         pieSliceTextStyle: {
             color: 'black',
@@ -473,10 +475,11 @@ function drawRiskChartLog() {
 //    ]);
     var options = {
         title: "Barrier Contribution to Risk of Mid-Air Collision",
-        width: 600,
+        width: 800,
         height: 400,
         bar: {groupWidth: "20%"},
-        legend: { position: 'bottom', maxLines: 10 },
+        chartArea: {width: 400, left: 80, top: 35, height: 300},
+        legend: { position: 'right', maxLines: 10 },
 //        legend: { position: "none" },
         isStacked: true,
         vAxis: {
