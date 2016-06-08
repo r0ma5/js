@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>ISAM what if</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script src="js/isam.js"></script>
+</head>
+<body>
+ 
+<div class="container-fluid">
+    <a href=https://ape-3.saabsensis.com/userweb/authentication/view/portal class="btn btn-primary btn-sm" role="button" onclick="window.open(this);return false;">ISAM Login</a> in different window and reload this one for "What-If" functionality to work.   
+    <button type="button" class="btn btn-primary btn-sm" onclick=location.reload(true)>Reset page</button> to retrieve ISAM data and reset all barriers.
+    <h4 class="esd-id"></h4>
+    <datalist id="ticks">
+        <option>0</option>
+        <option>0.1</option>
+        <option>0.2</option>
+        <option>0.3</option>
+        <option>0.4</option>
+        <option>0.5</option>
+        <option>0.6</option>
+        <option>0.7</option>
+        <option>0.8</option>
+        <option>0.9</option>
+        <option>1</option>
+    </datalist>
+    <div class="panel panel-success">
+        <div id="esd-desc" class="panel-heading"></div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-md-6" id="chart_div"></div>
+                <div class="col-md-6" id="chart_div_log"></div>
+            </div>
+            <div class="row">
+                <div class="col-md-3" id="chart_div_pie"></div>
+                <div class="col-md-9">
+                    <ul class="nav nav-tabs">
+                    <li class="active"><a data-toggle="tab" href="#mac">MAC</a></li>
+                    <li><a data-toggle="tab" href="#cabin">CABIN</a></li>
+                    <li><a data-toggle="tab" href="#cfit">CFIT</a></li>
+                    <li><a data-toggle="tab" href="#evac">EVAC</a></li>
+                    <li><a data-toggle="tab" href="#f_ni">F_NI</a></li>
+                    <li><a data-toggle="tab" href="#evac">GCOL</a></li>
+                    <li><a data-toggle="tab" href="#huh">...</a></li>
+                    </ul>
+                    <div class="tab-content">
+                        <div id="mac" class="tab-pane fade in active">
+                            <div class="panel panel-success">
+                                <div class="panel-heading">Barriers [0..1]</div>
+                                <div id="sliders" class="panel-body"></div>
+                            </div>
+                        </div>
+                        <div id="cabin" class="tab-pane fade">
+                            <p>Cabin related barriers</p>
+                        </div>
+                        <div id="cfit" class="tab-pane fade">
+                            <p>Controlled Flight into Terrain related barriers</p>
+                        </div>
+                        <div id="evac" class="tab-pane fade">
+                            <p>Evacuation related barriers</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

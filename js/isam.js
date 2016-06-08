@@ -494,6 +494,40 @@ function drawRiskChartLog() {
       var chart = new google.visualization.ColumnChart(document.getElementById('chart_div_log'));
       chart.draw(data, options);
     }
+    
+function ExamplePieChart() {
+
+        var data = google.visualization.arrayToDataTable([
+          ['Category', 'Risk'],
+          ['CFIT',     11],
+          ['F_NI',      2],
+          ['GCOL',  3],
+          ['ICE', 5],
+          ['LOC_I',    7],
+          ['MAC',    6],
+          ['OTHR',    13],
+          ['RE',    8],
+          ['RI_VAP',    9]
+        ]);
+
+        var options = {
+          title: 'NAS Risk',
+        width: 600,
+        height: 600,
+        pieSliceText: 'label',
+        chartArea: {left: 20, top: 45, height: 300},
+        legend: {position: 'right'},
+        pieSliceTextStyle: {
+            color: 'black',
+          },
+        slices: {0:{}, 1:{}, 2:{}, 3:{}, 4:{}, 5:{}, 6:{}, 7:{}, 8:{}, 9:{}},
+        };
+
+        var chart = new google.visualization.PieChart(document.getElementById('chart_div_pie'));
+
+        chart.draw(data, options);
+    }
+
 
 
 $(document).ready(function() {
@@ -506,6 +540,7 @@ $(document).ready(function() {
         google.charts.setOnLoadCallback(drawOutcomesChartLinear);
         google.charts.setOnLoadCallback(drawNonPositiveOutcomesPieChart);
         google.charts.setOnLoadCallback(drawRiskChartLog);
+//        google.charts.setOnLoadCallback(ExamplePieChart);
 //      esd.events = data.events;
         esd = new Esd(data.events);        
         esdId = data.uniqueId;
