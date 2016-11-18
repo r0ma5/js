@@ -481,10 +481,10 @@ function drawRiskChartLog() {
         chartArea: {width: 400, left: 80, top: 35, height: 300},
         legend: { position: 'right', maxLines: 10 },
 //        legend: { position: "none" },
-        isStacked: false,
+        isStacked: true,
         vAxis: {
           scaleType: 'log',
-          direction: -1,
+          direction: 1,
 //          ticks: []
 //          ticks: [1e-9]
         }
