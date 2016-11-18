@@ -481,7 +481,7 @@ function drawRiskChartLog() {
         chartArea: {width: 400, left: 80, top: 35, height: 300},
         legend: { position: 'right', maxLines: 10 },
 //        legend: { position: "none" },
-//        isStacked: true, //was true
+//        isStacked: true, //was true not working with log scale correctly
         vAxis: {
           scaleType: 'log',
           direction: 1,
