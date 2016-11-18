@@ -486,7 +486,7 @@ function drawRiskChartLog() {
           scaleType: 'log',
           direction: 1,
 //          ticks: []
-//          ticks: [1e-9]
+          ticks: [1, 0.1, 0.01, 0.001, 0.0001, 0.00001, 0.000001, 0.0000001]
         }
     };
 
