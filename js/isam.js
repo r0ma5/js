@@ -484,7 +484,7 @@ function drawRiskChartLog() {
         isStacked: false,
         vAxis: {
           scaleType: 'log',
-          direction: -1,
+          direction: 1,
 //          ticks: []
 //          ticks: [1e-9]
         }
