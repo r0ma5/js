@@ -483,7 +483,7 @@ function drawRiskChartLog() {
 //        legend: { position: "none" },
         isStacked: false,
         vAxis: {
-          scaleType: 'log',
+//          scaleType: 'log',
           direction: 1,
 //          ticks: []
 //          ticks: [1e-9]
