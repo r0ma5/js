@@ -71,7 +71,7 @@ FaultTree.prototype = {
             } else if (ftnode.type == 'XOR'){
                 var xor_prob = 0;
                 for (var i = 0; i < ftnode.childIds.length; i++){
-                    or_prob+=this.calculate(ftnode.childIds[i]);
+                    xor_prob+=this.calculate(ftnode.childIds[i]);
                 }
 //                console.log("Evaluated ft node:"+ftnode.uniqueId+" type:"+ftnode.type+" oprob:"+ftnode.probability+" xor_prob:"+xor_prob);
                 return xor_prob;
