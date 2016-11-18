@@ -492,6 +492,8 @@ function drawRiskChartLog() {
 
       // Instantiate and draw the chart.
       var chart = new google.visualization.ColumnChart(document.getElementById('chart_div_log'));
+      
+      console.log('log graph data')
       console.log(data);
       chart.draw(data, options);
     }
