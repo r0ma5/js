@@ -477,11 +477,11 @@ function drawRiskChartLog() {
         title: "Barrier Contribution to Risk of Mid-Air Collision",
         width: 800,
         height: 400,
-        bar: {groupWidth: "20%"},
+        bar: {groupWidth: "80%"},
         chartArea: {width: 400, left: 80, top: 35, height: 300},
         legend: { position: 'right', maxLines: 10 },
 //        legend: { position: "none" },
-        isStacked: 'relative',
+//        isStacked: true, //was true
         vAxis: {
           scaleType: 'log',
           direction: 1,
