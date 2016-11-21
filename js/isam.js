@@ -474,7 +474,7 @@ function drawRiskChartLog() {
 //        ['Outcomes', null, 0.00000078, 0.00000021, 0.00000001],
 //    ]);
     var options = {
-        title: "Barrier Contribution to Risk of Mid-Air Collision",
+        title: "Barrier contribution to reduction of risk in Mid-Air Collision",
         width: 800,
         height: 400,
         bar: {groupWidth: "20%"},
@@ -484,7 +484,7 @@ function drawRiskChartLog() {
         isStacked: true, //was true not working with log scale correctly
         vAxis: {
 //          scaleType: 'log',
-          direction: 1,
+          direction: -1,
 //          ticks: []
 //          ticks: [1, 0.1, 0.01, 0.001, 0.0001, 0.00001, 0.000001, 0.0000001]
             ticks: [{v:0, f:0}, 
