@@ -433,12 +433,12 @@ function drawRiskChartLog() {
     data.setCell(0, 0, 'Risk');
     for (var b in hc_barriers){
         if(esd.fuid(b)){
-            data.setCell(0, ++i, esd.fuid(b).probability);
+            data.setCell(0, ++i, esd.fuid(b).probability != 0 ? Math.log(esd.fuid(b).probability):0);
             data.setCell(0, ++i, esd.fuid(b).uniqueId+":"+esd.fuid(b).name+" ("+Number(esd.fuid(b).probability).toExponential()+")");
         } else {
             esd.events_with_ft().forEach(function(e){
                 if(e.ft.fuid(b)){
-                    data.setCell(0, ++i, e.ft.fuid(b).probability);
+                    data.setCell(0, ++i, e.ft.fuid(b).probability != 0 ? Math.log(e.ft.fuid(b).probability):0);
                     data.setCell(0, ++i, e.ft.fuid(b).uniqueId+":"+e.ft.fuid(b).name+" ("+Number(e.ft.fuid(b).probability).toExponential()+")");
                 }
             });
@@ -477,16 +477,30 @@ function drawRiskChartLog() {
         title: "Barrier Contribution to Risk of Mid-Air Collision",
         width: 800,
         height: 400,
-        bar: {groupWidth: "80%"},
+        bar: {groupWidth: "20%"},
         chartArea: {width: 400, left: 80, top: 35, height: 300},
         legend: { position: 'right', maxLines: 10 },
 //        legend: { position: "none" },
-//        isStacked: true, //was true not working with log scale correctly
+        isStacked: true, //was true not working with log scale correctly
         vAxis: {
-          scaleType: 'log',
+//          scaleType: 'log',
           direction: 1,
 //          ticks: []
-          ticks: [1, 0.1, 0.01, 0.001, 0.0001, 0.00001, 0.000001, 0.0000001]
+//          ticks: [1, 0.1, 0.01, 0.001, 0.0001, 0.00001, 0.000001, 0.0000001]
+            ticks: [{v:0, f:0}, 
+                    {v:Math.log(0.5), f:'0.5'}, 
+                    {v:Math.log(0.1), f:'0.1'},
+                    {v:Math.log(0.01), f:'1-e2'},
+                    {v:Math.log(0.001), f:'1-e3'},
+                    {v:Math.log(0.0001), f:'1-e4'},
+                    {v:Math.log(0.00001), f:'1-e5'},
+                    {v:Math.log(0.000001), f:'1-e6'},
+                    {v:Math.log(0.0000001), f:'1-e7'},
+                    {v:Math.log(0.00000001), f:'1-e8'},
+                    {v:Math.log(0.000000001), f:'1-e9'},
+                    {v:Math.log(0.0000000001), f:'1-e10'},
+                    {v:Math.log(0.00000000001), f:'1-e11'},
+            ]
         }
     };
 
