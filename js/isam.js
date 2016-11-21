@@ -484,7 +484,7 @@ function drawRiskChartLog() {
         isStacked: true, //was true not working with log scale correctly
         vAxis: {
 //          scaleType: 'log',
-          direction: -1,
+//          direction: -1,
 //          ticks: []
 //          ticks: [1, 0.1, 0.01, 0.001, 0.0001, 0.00001, 0.000001, 0.0000001]
             ticks: [{v:0, f:0}, 
